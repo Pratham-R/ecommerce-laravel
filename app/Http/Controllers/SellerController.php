@@ -71,9 +71,9 @@ class SellerController extends Controller
 
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move('uploads/products', $filename);
-            $data['photo'] = $filename;
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $file->move('storage/photos/1/Products', $filename);
+            $data['photo'] = '/storage/photos/1/Products/' . $filename;
         }
 
         Product::create($data);
@@ -106,11 +106,16 @@ class SellerController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
 
+        // Only allow status change if product is approved
+        if (!$product->is_approved) {
+            unset($data['status']);
+        }
+
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->move('uploads/products', $filename);
-            $data['photo'] = $filename;
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $file->move('storage/photos/1/Products', $filename);
+            $data['photo'] = '/storage/photos/1/Products/' . $filename;
         }
 
         $product->update($data);

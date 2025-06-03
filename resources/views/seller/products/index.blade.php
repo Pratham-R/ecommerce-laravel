@@ -42,7 +42,7 @@
                                 <tr>
                                     <td>
                                         @if($product->photo)
-                                            <img src="{{ asset('uploads/products/'.$product->photo) }}" alt="Product Photo" style="max-width: 50px;">
+                                            <img src="{{ asset($product->photo) }}" alt="Product Photo" style="max-width: 50px;">
                                         @else
                                             <img src="{{ asset('backend/img/thumbnail-default.jpg') }}" alt="Default Photo" style="max-width: 50px;">
                                         @endif

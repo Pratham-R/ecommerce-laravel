@@ -81,10 +81,13 @@
 
                         <div class="form-group">
                             <label for="status">Status</label>
-                            <select name="status" class="form-control @error('status') is-invalid @enderror">
+                            <select name="status" class="form-control @error('status') is-invalid @enderror" {{ !$product->is_approved ? 'disabled' : '' }}>
                                 <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
                                 <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
+                            @if(!$product->is_approved)
+                                <small class="text-muted">Status can only be changed after product approval</small>
+                            @endif
                             @error('status')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
