@@ -58,9 +58,17 @@ class FrontendController extends Controller
     }
 
     public function productDetail($slug){
-        $product_detail= Product::getProductBySlug($slug);
-        // dd($product_detail);
-        return view('frontend.pages.product_detail')->with('product_detail',$product_detail);
+        $product_detail = Product::where('slug', $slug)
+                               ->where('status', 'active')
+                               ->where('is_approved', true)
+                               ->first();
+        
+        if (!$product_detail) {
+            request()->session()->flash('error', 'Product not found');
+            return redirect()->route('home');
+        }
+
+        return view('frontend.pages.product_detail')->with('product_detail', $product_detail);
     }
 
     public function productGrids()
@@ -142,35 +150,62 @@ class FrontendController extends Controller
 
     public function productBrand(Request $request)
     {
-        $products = Brand::getProductByBrand($request->slug);
+        $brand = Brand::where('slug', $request->slug)->first();
+        $products = Product::where('brand_id', $brand->id)
+                         ->where('status', 'active')
+                         ->where('is_approved', true)
+                         ->paginate(12);
         $recent_products = Product::where('is_approved', true)
                                 ->where('status', 'active')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(3);
-        return view('frontend.pages.category')->with('products', $products->products)
-                                            ->with('recent_products', $recent_products);
+        $categories = Category::where('status', 'active')
+                            ->where('is_parent', 1)
+                            ->orderBy('title', 'ASC')
+                            ->get();
+        return view('frontend.pages.category')->with('products', $products)
+                                            ->with('recent_products', $recent_products)
+                                            ->with('categories', $categories);
     }
 
     public function productCat(Request $request)
     {
-        $products = Category::getProductByCat($request->slug);
+        $category = Category::where('slug', $request->slug)->first();
+        $products = Product::where('cat_id', $category->id)
+                         ->where('status', 'active')
+                         ->where('is_approved', true)
+                         ->paginate(12);
         $recent_products = Product::where('is_approved', true)
                                 ->where('status', 'active')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(3);
-        return view('frontend.pages.category')->with('products', $products->products)
-                                            ->with('recent_products', $recent_products);
+        $categories = Category::where('status', 'active')
+                            ->where('is_parent', 1)
+                            ->orderBy('title', 'ASC')
+                            ->get();
+        return view('frontend.pages.category')->with('products', $products)
+                                            ->with('recent_products', $recent_products)
+                                            ->with('categories', $categories);
     }
 
     public function productSubCat(Request $request)
     {
-        $products = Category::getProductBySubCat($request->sub_slug);
+        $category = Category::where('slug', $request->sub_slug)->first();
+        $products = Product::where('child_cat_id', $category->id)
+                         ->where('status', 'active')
+                         ->where('is_approved', true)
+                         ->paginate(12);
         $recent_products = Product::where('is_approved', true)
                                 ->where('status', 'active')
                                 ->orderBy('created_at', 'desc')
                                 ->paginate(3);
-        return view('frontend.pages.category')->with('products', $products->sub_products)
-                                            ->with('recent_products', $recent_products);
+        $categories = Category::where('status', 'active')
+                            ->where('is_parent', 1)
+                            ->orderBy('title', 'ASC')
+                            ->get();
+        return view('frontend.pages.category')->with('products', $products)
+                                            ->with('recent_products', $recent_products)
+                                            ->with('categories', $categories);
     }
 
     public function blog(){
