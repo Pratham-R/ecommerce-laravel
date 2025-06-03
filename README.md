@@ -61,17 +61,22 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-7. Run database migrations and seeders:
+7. Import demo data (optional):
+```bash
+mysql -u your_username -p your_database_name < database/e-shop.sql
+```
+
+8. Run database migrations and seeders:
 ```bash
 php artisan migrate --seed
 ```
 
-8. Create storage link:
+9. Create storage link:
 ```bash
 php artisan storage:link
 ```
 
-9. Start the development server:
+10. Start the development server:
 ```bash
 php artisan serve
 ```
