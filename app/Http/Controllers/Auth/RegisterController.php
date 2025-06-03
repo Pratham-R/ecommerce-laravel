@@ -50,12 +50,51 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[\pL\s]+$/u'],
-            'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name' => [
+                'required',
+                'string',
+                'min:2',
+                'max:50',
+                'regex:/^[A-Za-z\s]+$/'
+            ],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+            ],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+            ],
+            'role' => [
+                'required',
+                'string',
+                'in:user,seller'
+            ]
         ], [
-            'name.regex' => 'The name field should only contain letters and spaces.',
+            'name.required' => 'Please enter your name.',
+            'name.min' => 'Name must be at least 2 characters long.',
+            'name.max' => 'Name cannot exceed 50 characters.',
+            'name.regex' => 'Name should only contain letters and spaces.',
+            
+            'email.required' => 'Please enter your email address.',
             'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email address is already registered.',
+            'email.regex' => 'Please enter a valid email address format.',
+            
+            'password.required' => 'Please enter a password.',
+            'password.min' => 'Password must be at least 8 characters long.',
+            'password.confirmed' => 'Password confirmation does not match.',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+            
+            'role.required' => 'Please select an account type.',
+            'role.in' => 'Invalid account type selected.'
         ]);
     }
 

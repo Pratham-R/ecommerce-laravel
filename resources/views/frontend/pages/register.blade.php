@@ -29,13 +29,17 @@
                         <h2>Register</h2>
                         <p>Please register in order to checkout more quickly</p>
                         <!-- Form -->
-                        <form class="form" method="post" action="{{route('register.submit')}}">
+                        <form class="form" method="post" action="{{route('register.submit')}}" id="registerForm" novalidate>
                             @csrf
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Your Name<span>*</span></label>
-                                        <input type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
+                                        <input type="text" name="name" placeholder="" required="required" value="{{old('name')}}" 
+                                            pattern="[A-Za-z\s]+" 
+                                            title="Name should only contain letters and spaces"
+                                            minlength="2" 
+                                            maxlength="50">
                                         @error('name')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -44,7 +48,9 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Your Email<span>*</span></label>
-                                        <input type="text" name="email" placeholder="" required="required" value="{{old('email')}}">
+                                        <input type="email" name="email" placeholder="" required="required" value="{{old('email')}}"
+                                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                            title="Please enter a valid email address">
                                         @error('email')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -53,7 +59,10 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Your Password<span>*</span></label>
-                                        <input type="password" name="password" placeholder="" required="required" value="{{old('password')}}">
+                                        <input type="password" name="password" placeholder="" required="required" value="{{old('password')}}"
+                                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                                            title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character"
+                                            minlength="8">
                                         @error('password')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -62,7 +71,8 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Confirm Password<span>*</span></label>
-                                        <input type="password" name="password_confirmation" placeholder="" required="required" value="{{old('password_confirmation')}}">
+                                        <input type="password" name="password_confirmation" placeholder="" required="required" value="{{old('password_confirmation')}}"
+                                            minlength="8">
                                         @error('password_confirmation')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -127,4 +137,55 @@
         background:rgb(243, 26, 26) !important;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = form.querySelector('input[name="password"]');
+    const confirmPassword = form.querySelector('input[name="password_confirmation"]');
+
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Check if passwords match
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+            return false;
+        }
+
+        // Check name for special characters
+        const name = form.querySelector('input[name="name"]');
+        if (!/^[A-Za-z\s]+$/.test(name.value)) {
+            e.preventDefault();
+            alert('Name should only contain letters and spaces!');
+            return false;
+        }
+
+        // Check email format
+        const email = form.querySelector('input[name="email"]');
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.value)) {
+            e.preventDefault();
+            alert('Please enter a valid email address!');
+            return false;
+        }
+
+        form.classList.add('was-validated');
+    });
+
+    // Real-time password match validation
+    confirmPassword.addEventListener('input', function() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    });
+});
+</script>
 @endpush
